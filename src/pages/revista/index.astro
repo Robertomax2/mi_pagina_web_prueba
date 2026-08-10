@@ -1,0 +1,68 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+
+const articulos = (await getCollection('articulos')).sort(
+  (a, b) => b.data.fecha.valueOf() - a.data.fecha.valueOf()
+);
+const categorias = [...new Set(articulos.map((a) => a.data.categoria))];
+---
+<Layout title="Revista" description="Notas del estudio sobre materiales, paisaje y oficio.">
+  <section class="wrap head">
+    <p class="eyebrow reveal">Revista</p>
+    <h1 class="reveal">Notas sobre materiales, paisaje y oficio.</h1>
+    <div class="head__cats reveal">
+      <span class="cat cat--active">Todo</span>
+      {categorias.map((c) => <span class="cat">{c}</span>)}
+    </div>
+  </section>
+
+  <section class="wrap grid">
+    {articulos.map((a) => (
+      <ArticleCard
+        href={`/revista/${a.slug}`}
+        imagen={a.data.imagen}
+        imagenAlt={a.data.imagenAlt}
+        titulo={a.data.titulo}
+        categoria={a.data.categoria}
+        fecha={a.data.fecha}
+      />
+    ))}
+  </section>
+</Layout>
+
+<style>
+  .head { padding: 72px 0 32px; border-bottom: 1px solid var(--line); }
+  .head h1 { font-size: clamp(34px, 5vw, 58px); max-width: 18ch; margin-top: 16px; }
+  .head__cats {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 32px;
+    padding-bottom: 28px;
+  }
+  .cat {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 7px 14px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--ink-soft);
+  }
+  .cat--active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .grid {
+    padding: 56px 0 120px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 48px 28px;
+  }
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 560px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>

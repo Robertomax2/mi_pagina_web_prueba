@@ -1,0 +1,63 @@
+---
+interface Props {
+  href: string;
+  imagen: string;
+  imagenAlt: string;
+  titulo: string;
+  categoria: string;
+  fecha: Date;
+}
+const { href, imagen, imagenAlt, titulo, categoria, fecha } = Astro.props;
+const fechaFmt = fecha.toLocaleDateString('es-CL', { day: 'numeric', month: 'short', year: 'numeric' });
+---
+<a href={href} class="acard reveal">
+  <div class="acard__frame">
+    <img src={imagen} alt={imagenAlt} loading="lazy" />
+    <span class="acard__tag">{categoria}</span>
+  </div>
+  <h3 class="acard__title">{titulo}</h3>
+  <p class="acard__date">{fechaFmt}</p>
+</a>
+
+<style>
+  .acard { display: block; }
+  .acard__frame {
+    position: relative;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    background: var(--paper-dim);
+    margin-bottom: 16px;
+  }
+  .acard__frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+  .acard:hover .acard__frame img { transform: scale(1.04); }
+  .acard__tag {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 5px 10px;
+  }
+  .acard__title {
+    font-size: 21px;
+    line-height: 1.25;
+    margin-bottom: 8px;
+  }
+  .acard:hover .acard__title { color: var(--moss); }
+  .acard__date {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--stone);
+    margin: 0;
+    text-transform: uppercase;
+  }
+</style>

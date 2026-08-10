@@ -1,0 +1,290 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { getCollection } from 'astro:content';
+
+const proyectos = (await getCollection('proyectos')).sort((a, b) => b.data.anio - a.data.anio);
+const destacados = proyectos.filter((p) => p.data.destacado).slice(0, 2);
+const resto = proyectos.filter((p) => !destacados.includes(p)).slice(0, 4);
+const gridProyectos = [...destacados, ...resto].slice(0, 6);
+
+// Fotos para la constelación de la sección oscura
+const constelacion = proyectos.slice(0, 7);
+---
+<Layout title="Piedra & Luz — Estudio de Arquitectura">
+
+  <!-- HERO -->
+  <section class="hero">
+    <img
+      class="hero__img"
+      src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2000&auto=format&fit=crop"
+      alt="Casa contemporánea de hormigón visto sobre un acantilado"
+    />
+    <div class="hero__scrim"></div>
+    <div class="wrap hero__content">
+      <p class="eyebrow hero__eyebrow">Estudio de arquitectura · Santiago, Chile</p>
+      <h1 class="hero__title">Claridad en la<br /><em>estructura</em>,<br />calidez en el material.</h1>
+    </div>
+  </section>
+
+  <!-- ESTUDIO / STORY -->
+  <section class="story wrap" id="estudio">
+    <p class="eyebrow reveal">Nuestro enfoque</p>
+    <h2 class="story__statement reveal">
+      Cada proyecto empieza como un trazo a mano —
+      y termina siendo un lugar donde vivir.
+    </h2>
+    <div class="story__row">
+      <p class="story__text reveal">
+        Desde 2014 diseñamos casas, edificios públicos y espacios culturales que parten
+        siempre del mismo lugar: el sitio, sus materiales y las personas que van a habitarlo.
+        No dibujamos formas primero — dibujamos las condiciones del lugar, y la forma aparece después.
+      </p>
+      <svg class="story__sketch reveal" viewBox="0 0 200 140" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M10 120 L70 40 L100 70 L140 20 L190 60" stroke="var(--ink)" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M70 40 L70 120" stroke="var(--ink)" stroke-width="1.2" stroke-dasharray="2 4"/>
+        <path d="M140 20 L140 90 L170 90 L170 20 Z" stroke="var(--moss)" stroke-width="1.2"/>
+        <circle cx="70" cy="40" r="2.5" fill="var(--moss)"/>
+        <circle cx="100" cy="70" r="2.5" fill="var(--moss)"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- PROYECTOS -->
+  <section class="projects wrap">
+    <div class="projects__head reveal">
+      <h2>Obra reciente</h2>
+      <a href="/obra" class="projects__link">Ver toda la obra →</a>
+    </div>
+    <div class="projects__grid">
+      {gridProyectos.map((p) => (
+        <ProjectCard
+          href={`/obra/${p.slug}`}
+          imagen={p.data.imagen}
+          imagenAlt={p.data.imagenAlt}
+          titulo={p.data.titulo}
+          ubicacion={p.data.ubicacion}
+          anio={p.data.anio}
+        />
+      ))}
+    </div>
+  </section>
+
+  <!-- GALERÍA OSCURA / CONTADOR (elemento distintivo) -->
+  <section class="gallery">
+    <div class="gallery__constellation" aria-hidden="true">
+      {constelacion.map((p, i) => (
+        <img
+          class={`gallery__photo gp-${i}`}
+          src={p.data.imagen}
+          alt=""
+          loading="lazy"
+        />
+      ))}
+    </div>
+    <div class="wrap gallery__content">
+      <p class="eyebrow gallery__eyebrow reveal">Once años de obra construida</p>
+      <div class="gallery__counter reveal">
+        <span class="counter" data-target="38">0</span>
+        <span class="gallery__counter-label">proyectos construidos<br />en 3 países</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVISTA PREVIEW -->
+  <section class="journal-teaser wrap">
+    <div class="projects__head reveal">
+      <h2>Últimas notas</h2>
+      <a href="/revista" class="projects__link">Ir a la Revista →</a>
+    </div>
+    <p class="journal-teaser__text reveal">
+      Escribimos sobre materiales, paisaje y el oficio de construir — desde adentro del estudio.
+    </p>
+  </section>
+
+</Layout>
+
+<style>
+  /* HERO */
+  .hero {
+    position: relative;
+    height: 92vh;
+    min-height: 560px;
+    overflow: hidden;
+  }
+  .hero__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hero__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, rgba(11,11,9,0.62) 0%, rgba(11,11,9,0.06) 55%, transparent 75%);
+  }
+  .hero__content {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 56px;
+  }
+  .hero__eyebrow { color: #E4E1D6; margin-bottom: 14px; }
+  .hero__title {
+    color: #FAF9F4;
+    font-size: clamp(38px, 7vw, 84px);
+    max-width: 12ch;
+  }
+  .hero__title em { font-style: italic; color: var(--moss-soft); }
+
+  /* STORY */
+  .story { padding: 140px 0 100px; }
+  .story__statement {
+    font-size: clamp(28px, 4.4vw, 52px);
+    max-width: 18ch;
+    margin: 18px 0 56px;
+    font-style: italic;
+  }
+  .story__row {
+    display: grid;
+    grid-template-columns: 1.3fr 0.7fr;
+    gap: 60px;
+    align-items: center;
+  }
+  .story__text {
+    font-size: 18px;
+    color: var(--ink-soft);
+    max-width: 46ch;
+  }
+  .story__sketch { width: 100%; height: auto; }
+
+  /* PROJECTS */
+  .projects { padding: 60px 0 120px; }
+  .projects__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 44px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 20px;
+  }
+  .projects__head h2 { font-size: clamp(30px, 4vw, 46px); }
+  .projects__link {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 2px;
+    white-space: nowrap;
+  }
+  .projects__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 48px 32px;
+  }
+  .projects__grid > :global(.card:first-child) {
+    grid-column: 1 / -1;
+  }
+  .projects__grid > :global(.card:first-child) .card__frame { aspect-ratio: 16 / 8; }
+
+  /* GALLERY / DARK SECTION */
+  .gallery {
+    position: relative;
+    background: var(--night);
+    min-height: 640px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+  }
+  .gallery__constellation {
+    position: absolute;
+    inset: 0;
+  }
+  .gallery__photo {
+    position: absolute;
+    width: 180px;
+    aspect-ratio: 4/5;
+    object-fit: cover;
+    border: 6px solid #EFEDE4;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    opacity: 0.9;
+  }
+  .gp-0 { width: 200px; top: 8%;  left: 6%;  transform: rotate(-8deg); }
+  .gp-1 { width: 150px; top: 62%; left: 4%;  transform: rotate(6deg); }
+  .gp-2 { width: 170px; top: 10%; right: 8%; transform: rotate(7deg); }
+  .gp-3 { width: 140px; top: 66%; right: 6%; transform: rotate(-5deg); }
+  .gp-4 { width: 120px; top: 38%; left: 1%;  transform: rotate(-3deg); display: none; }
+  .gp-5 { width: 120px; top: 40%; right: 1%; transform: rotate(4deg);  display: none; }
+  .gp-6 { display: none; }
+
+  .gallery__content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+  }
+  .gallery__eyebrow { color: var(--moss-soft); justify-content: center; display: flex; margin-bottom: 18px; }
+  .gallery__counter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .counter {
+    font-family: var(--font-display);
+    color: var(--paper);
+    font-size: clamp(80px, 16vw, 180px);
+    line-height: 1;
+  }
+  .gallery__counter-label {
+    font-family: var(--font-mono);
+    color: var(--stone);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* JOURNAL TEASER */
+  .journal-teaser { padding: 120px 0; }
+  .journal-teaser__text {
+    font-size: 20px;
+    color: var(--ink-soft);
+    max-width: 50ch;
+  }
+
+  @media (max-width: 800px) {
+    .story__row { grid-template-columns: 1fr; }
+    .story__sketch { max-width: 220px; margin: 0 auto; }
+    .projects__grid { grid-template-columns: 1fr; }
+    .projects__grid > :global(.card:first-child) { grid-column: auto; }
+    .gallery__photo { width: 110px !important; }
+    .gallery { min-height: 520px; }
+  }
+</style>
+
+<script>
+  // Cuenta ascendente cuando el contador entra en pantalla
+  const counters = document.querySelectorAll<HTMLElement>('.counter');
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const el = entry.target as HTMLElement;
+        const target = parseInt(el.dataset.target || '0', 10);
+        const duration = 1400;
+        const start = performance.now();
+        function tick(now: number) {
+          const p = Math.min(1, (now - start) / duration);
+          const eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = String(Math.round(eased * target));
+          if (p < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+        io.unobserve(el);
+      }
+    },
+    { threshold: 0.5 }
+  );
+  counters.forEach((c) => io.observe(c));
+</script>

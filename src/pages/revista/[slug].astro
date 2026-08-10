@@ -1,0 +1,78 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const articulos = await getCollection('articulos');
+  return articulos.map((a) => ({
+    params: { slug: a.slug },
+    props: { articulo: a },
+  }));
+}
+
+interface Props {
+  articulo: CollectionEntry<'articulos'>;
+}
+
+const { articulo } = Astro.props;
+const { Content } = await articulo.render();
+const { titulo, categoria, fecha, autor, imagen, imagenAlt, resumen } = articulo.data;
+const fechaFmt = fecha.toLocaleDateString('es-CL', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+<Layout title={titulo} description={resumen}>
+  <article class="wrap post">
+    <header class="post__head reveal">
+      <p class="eyebrow">{categoria}</p>
+      <h1>{titulo}</h1>
+      <p class="post__meta">{autor} · {fechaFmt}</p>
+    </header>
+
+    <img class="post__img reveal" src={imagen} alt={imagenAlt} />
+
+    <div class="post__body reveal">
+      <Content />
+    </div>
+
+    <div class="back">
+      <a href="/revista" class="back__link">← Volver a Revista</a>
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .post { padding: 72px 0 120px; max-width: 780px; }
+  .post__head h1 { font-size: clamp(32px, 5vw, 52px); margin-top: 14px; }
+  .post__meta {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    text-transform: uppercase;
+    color: var(--stone);
+    margin-top: 14px;
+  }
+  .post__img {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    margin: 48px 0;
+  }
+  .post__body {
+    font-size: 19px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+  }
+  .post__body :global(h2) {
+    font-size: 27px;
+    color: var(--ink);
+    margin-top: 44px;
+    margin-bottom: 16px;
+  }
+  .back { margin-top: 64px; }
+  .back__link {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 2px;
+  }
+</style>
